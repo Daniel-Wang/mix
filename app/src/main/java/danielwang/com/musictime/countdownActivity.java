@@ -204,6 +204,11 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
     }
 
     public void playSong(int songPos) {
+        if (mp != null) {
+            mp.stop();
+            mp.release();
+        }
+
         mp = playlist.get(songPos);
         mp.setOnCompletionListener(this);
         mp.start();
