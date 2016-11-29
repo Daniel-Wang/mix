@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Music Time</string>
+    <string name="app_name">Mix</string>
     <string name="hours_label">h</string>
     <string name="minutes_label">m</string>
     <string name="seconds_label">s</string>

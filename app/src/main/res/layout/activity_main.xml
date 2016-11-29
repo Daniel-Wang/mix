@@ -147,4 +147,15 @@
         android:onClick="startTimer"
         android:text="Start" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text=""
+        android:visibility="invisible"
+        android:background="@drawable/rounded_corner"
+        android:id="@+id/tooShortWarning"
+        android:layout_below="@+id/linear_layout_enteredNum"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

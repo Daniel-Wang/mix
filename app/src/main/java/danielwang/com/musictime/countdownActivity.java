@@ -8,31 +8,26 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.File;
 import java.util.ArrayList;
-
-// depth first traversal
-// node is song
-// edge with cost is length of song
-//
+import java.util.Random;
 
 
 public class countdownActivity extends Activity implements MediaPlayer.OnCompletionListener {
-    final int MINUTE = 60000;
 
-    private int pos = 50;
-
-    File[] twomin;
-    File[] fourmin;
-    File[] sixmin;
+    private int songIndex = -1;
+    private int shortestLength = 0;
+    private int pos = 0;
+    private Boolean pickShortest = false;
+    private final int MARGIN = 20000;
 
     public int hours;
     public int minutes;
@@ -44,21 +39,25 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
     long milliLeft;
     MediaPlayer mp;
 
+    int timeLeft = 0;
+
 
     private ArrayList<File> songList;
+    private ArrayList<MediaPlayer> playlist = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_countdown);
 
-        songList = findSongs(Environment.getExternalStorageDirectory());
+
 
         //playButton = (ImageView) findViewById(R.id.pause_button);
         playButton = (Button) findViewById(R.id.pause_button);
 
 
         // Here, this is the current activity
+
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -85,14 +84,63 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
             return;
         }
 
-        doCountDown();
+
+        Intent intent = getIntent();
+
+        hours = intent.getIntExtra("hours", 0);
+        minutes = intent.getIntExtra("minutes", 0);
+        seconds = intent.getIntExtra("seconds", 0);
+
+        songList = (ArrayList<File>) getIntent().getSerializableExtra("songList");
+        shortestLength = intent.getIntExtra("shortestLength", 0);
+
+        timeLeft = toMilliSec(hours, minutes, seconds);
+        Log.e("Hello", Integer.toString(timeLeft));
 
         if (mp != null) {
             mp.stop();
             mp.release();
         }
 
+        while(timeLeft > MARGIN){
+            Log.e("songIndex", Integer.toString(songIndex));
+            Uri u = Uri.parse(pickRandSong().toString());
+            MediaPlayer singleSong = MediaPlayer.create(this, u);
+            playlist.add(singleSong);
+            songIndex++;
+
+            timeLeft -= singleSong.getDuration();
+            if(timeLeft > 0 && timeLeft < MARGIN){
+                //You're done, break out of the loop
+                Log.e("Break", Integer.toString(songIndex));
+                break;
+            } else if(timeLeft < shortestLength){
+                //Pop off a song and find a fit song and end
+                Log.e("Pop off 1", Integer.toString(songIndex));
+                for (int x = 0; x < playlist.size(); x++){
+                    Log.e("Songs", playlist.get(x).toString());
+                }
+                timeLeft += playlist.get(songIndex).getDuration();
+                playlist.remove(songIndex);
+                songIndex--;
+                pickShortest = true;
+                Log.e("Pop off 2", Integer.toString(songIndex));
+                for (int x = 0; x < playlist.size(); x++){
+                    Log.e("Songs", playlist.get(x).toString());
+                }
+
+                playlist.add(fitSong(timeLeft));
+                songIndex++;
+                Log.e("Add last", Integer.toString(songIndex));
+                for (int x = 0; x < playlist.size(); x++){
+                    Log.e("Songs", playlist.get(x).toString());
+                }
+                break;
+            }
+        }
+
         playSong(pos);
+        doCountDown();
 
     }
 
@@ -112,16 +160,7 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
 
 
     private void doCountDown() {
-//        ContentResolver musicResolver = getContentResolver();
-//        Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-//        Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
 
-
-        Intent intent = getIntent();
-
-        hours = intent.getIntExtra("hours", 0);
-        minutes = intent.getIntExtra("minutes", 0);
-        seconds = intent.getIntExtra("seconds", 0);
 
         enteredNum[0] = (TextView) findViewById(R.id.cd_seconds);
         enteredNum[1] = (TextView) findViewById(R.id.cd_minutes);
@@ -130,8 +169,6 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
         enteredNum[2].setText(String.valueOf(hours));
         enteredNum[1].setText(String.valueOf(minutes));
         enteredNum[0].setText(String.valueOf(seconds));
-
-        //generatePlaylist(toMilliSec(hours, minutes, seconds), songList);
 
         timer = new CountDownTimer(toMilliSec(hours, minutes, seconds), 1000) {
 
@@ -149,55 +186,59 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
         }.start();
     }
 
+    public File pickRandSong(){
+        Random rand = new Random();
 
-//    public void generatePlaylist(int millisec, ArrayList<File> songs) {
-//        int length = songs.size();
-//
-//        twomin = new File[length];
-//        fourmin = new File[length];
-//        sixmin = new File[length];
-//        int a = 0;
-//        int b = 0;
-//        int c = 0;
-//
-//        for (int i = 0; i < songList.size(); i++) {
-//            if (songList.get(i). <= 2 * MINUTE) {
-//                twomin[a] = songList.get(i);
-//                a++;
-//            } else if (songList.get(i).getDuration() <= 4 * MINUTE) {
-//                fourmin[b] = songList.get(i);
-//                b++;
-//            } else {
-//                sixmin[c] = songList.get(i);
-//                c++;
-//            }
-//        }
-//    }
+        int n = rand.nextInt(songList.size());
+        return songList.get(n);
 
-    public ArrayList<File> findSongs(File root) {
-        ArrayList<File> al = new ArrayList<File>();
-        File[] files = root.listFiles();
+    }
 
-        for (File singleFile : files) {
-            if (singleFile.isDirectory() && !singleFile.isHidden()) {
-                al.addAll(findSongs(singleFile));
-            } else {
-                if (singleFile.getName().endsWith(".mp3") ||
-                        singleFile.getName().endsWith(".wav")) {
-                    al.add(singleFile);
-                }
+    public MediaPlayer fitSong(int duration){
+        Boolean arrayComplete = false;
+        MediaPlayer myMp;
+        ArrayList<MediaPlayer> media = new ArrayList<>();
+        int indexSongList = 0;
+        int index = -1;
+
+        while(!arrayComplete){
+            Uri u = Uri.parse(songList.get(indexSongList).toString());
+            mp = MediaPlayer.create(this, u);
+
+            if(mp.getDuration() < duration - MARGIN){
+                indexSongList++;
+                Log.e("indexSongList", Integer.toString(indexSongList));
+                continue;
+            }
+            if(mp.getDuration() > (duration - MARGIN) && mp.getDuration() < (duration + MARGIN)){
+                media.add(mp);
+                index++;
+                indexSongList++;
+                Log.e("index", Integer.toString(index));
+                Log.e("indexSongList", Integer.toString(indexSongList));
+
+            } else if(mp.getDuration() > (duration + MARGIN)){
+                media.remove(index);
+                index--;
+                arrayComplete = true;
+                Log.e("Hello", "For the depths of the else if");
             }
         }
-        return al;
+        Random rand = new Random();
+        int n = rand.nextInt(media.size());
+        myMp = media.get(n);
+        Log.e("Song", myMp.toString());
+        return myMp;
     }
+
+
 
     int toMilliSec(int hour, int min, int sec) {
         return (hour * 3600000 + min * 60000 + sec * 1000);
     }
 
     public void playSong(int songPos) {
-        Uri u = Uri.parse(songList.get(songPos).toString());
-        mp = MediaPlayer.create(this, u);
+        mp = playlist.get(songPos);
         mp.setOnCompletionListener(this);
         mp.start();
     }
@@ -206,12 +247,10 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
     public void onCompletion(MediaPlayer arg0) {
 
         // no repeat or shuffle ON - play next song
-        if (pos < songList.size() - 1) {
+        if (pos < playlist.size() - 1) {
             pos++;
             playSong(pos);
         }
-
-
     }
 
 
