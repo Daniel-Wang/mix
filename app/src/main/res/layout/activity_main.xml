@@ -7,6 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="#D5EEFF"
     tools:context="danielwang.com.musictime.MainActivity">
 
 
@@ -148,14 +149,29 @@
         android:text="Start" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text=""
+        android:textColor="@android:color/white"
         android:visibility="invisible"
         android:background="@drawable/rounded_corner"
         android:id="@+id/tooShortWarning"
         android:layout_below="@+id/linear_layout_enteredNum"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:gravity="center"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Dusting off cobwebs..."
+        android:textColor="@android:color/white"
+        android:visibility="visible"
+        android:background="@drawable/loading_message"
+        android:id="@+id/loadingMessage"
+        android:layout_below="@+id/linear_layout_enteredNum"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"/>
 
 </RelativeLayout>

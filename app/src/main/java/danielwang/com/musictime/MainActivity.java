@@ -31,6 +31,7 @@ public class MainActivity extends Activity implements Button.OnClickListener{
     private ArrayList<File> fileList = new ArrayList<>();
     private int shortestLength = 0;
     private TextView warningView;
+    private TextView loadingMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,7 @@ public class MainActivity extends Activity implements Button.OnClickListener{
         setContentView(R.layout.activity_main);
 
         warningView = (TextView) findViewById(R.id.tooShortWarning);
+        loadingMessage = (TextView) findViewById(R.id.loadingMessage);
 
         mDelete = (ImageButton) findViewById(R.id.delete);
         mDelete.setOnClickListener(this);
@@ -89,16 +91,17 @@ public class MainActivity extends Activity implements Button.OnClickListener{
                 // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
                 // app-defined int constant. The callback method gets the
                 // result of the request.
-
             }
 
         } else{
-            songList = findSongs(Environment.getExternalStorageDirectory());
-            shortestLength = songList.get(0).getDuration();
-            Log.e("This is in", "the else");
 
-            for(int i = 0; i < songList.size(); i++)
-                fileList.add(songList.get(i).getFile());
+            Intent intent = getIntent();
+
+            fileList = (ArrayList<File>) getIntent().getSerializableExtra("songList");
+            shortestLength = intent.getIntExtra("shortestLength", 0);
+            Log.e("Shortest length", "" + fileList.get(0).toString());
+
+            loadingMessage.setVisibility(View.INVISIBLE);
         }
 
     }
@@ -144,12 +147,30 @@ public class MainActivity extends Activity implements Button.OnClickListener{
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_GRANTED){
+
+            //loadingMessage.setVisibility(View.VISIBLE);
+            //loadingMessage.setText("Dusting off cobwebs...");
+
             songList = findSongs(Environment.getExternalStorageDirectory());
             shortestLength = songList.get(0).getDuration();
 
             Log.e("Shortest length", "" + songList.get(0).getFile().toString());
             for(int i = 0; i < songList.size(); i++)
                 fileList.add(songList.get(i).getFile());
+
+            loadingMessage.setText("Your music is ready to go!");
+
+            final Animation in = new AlphaAnimation(0.0f, 1.0f);
+            final Animation out = new AlphaAnimation(1.0f, 0.0f);
+
+            loadingMessage.startAnimation(in);
+            loadingMessage.startAnimation(out);
+
+            in.setDuration(1200);
+            in.setFillAfter(true);
+            out.setDuration(1200);
+            out.setFillAfter(true);
+            out.setStartOffset(3000+in.getStartOffset());
 
         } else {
             Toast.makeText(this, "Aw, this app won't work without your permission", Toast.LENGTH_SHORT).show();
