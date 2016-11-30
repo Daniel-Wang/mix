@@ -2,11 +2,15 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="timer_setup_font_size">38sp</dimen>
-    <dimen name="countdown_setup_font_size">60sp</dimen>
+    <dimen name="timer_setup_font_size">50sp</dimen>
+    <dimen name="countdown_setup_font_size">70sp</dimen>
+
     <!--margin should be ~ half timer_setup_font_size -->
     <dimen name="timer_setup_delete_margin">14sp</dimen>
-    <dimen name="timer_setup_delete_padding">12dp</dimen>
+    <dimen name="timer_setup_delete_padding">10dp</dimen>
+
     <!-- Specified in sp to match the top margin of the time on the adjacent world clock tab. -->
-    <dimen name="timer_setup_top_margin">18sp</dimen>
+    <dimen name="timer_setup_top_margin">12sp</dimen>
+
+    <dimen name="dialpad_font_size">36sp</dimen>
 </resources>

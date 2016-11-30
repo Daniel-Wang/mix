@@ -85,6 +85,15 @@
         android:src="@drawable/backspace"
         android:layout_toRightOf="@+id/linear_layout_enteredNum"/>
 
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginBottom="8dp"
+        android:layout_alignBottom="@id/linear_layout_enteredNum"
+        android:background="@android:color/darker_gray" />
+
     <GridLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -95,63 +104,140 @@
         android:orientation="horizontal">
 
         <Button
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:textColor="@android:color/black"
             android:id="@+id/key_one"
-            android:text="1" />
+            android:text="1"
+            style="@style/dialpad"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"/>
 
         <Button
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:textColor="@android:color/black"
             android:id="@+id/key_two"
-            android:text="2" />
+            android:text="2"
+            style="@style/dialpad"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"/>
 
         <Button
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:textColor="@android:color/black"
             android:id="@+id/key_three"
-            android:text="3" />
+            android:text="3"
+            style="@style/dialpad"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"/>
 
         <Button
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:textColor="@android:color/black"
             android:id="@+id/key_four"
-            android:text="4" />
+            android:text="4"
+            style="@style/dialpad"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"/>
 
         <Button
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:textColor="@android:color/black"
             android:id="@+id/key_five"
-            android:text="5" />
+            android:text="5"
+            style="@style/dialpad"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"/>
 
         <Button
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:textColor="@android:color/black"
             android:id="@+id/key_six"
-            android:text="6" />
+            android:text="6"
+            style="@style/dialpad"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"/>
 
         <Button
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:textColor="@android:color/black"
             android:id="@+id/key_seven"
-            android:text="7" />
+            android:text="7"
+            style="@style/dialpad"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"/>
 
         <Button
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:textColor="@android:color/black"
             android:id="@+id/key_eight"
-            android:text="8" />
+            android:text="8"
+            style="@style/dialpad"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"/>
 
         <Button
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:textColor="@android:color/black"
             android:id="@+id/key_nine"
-            android:text="9" />
+            android:text="9"
+            style="@style/dialpad"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"/>
 
         <Button
+            android:layout_margin="@dimen/activity_horizontal_margin"
             android:id="@+id/key_zero"
             android:layout_columnSpan="2"
             android:layout_gravity="right"
-            android:text="0" />
+            android:text="0"
+            android:textColor="@android:color/black"
+            style="@style/dialpad"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
 
     </GridLayout>
 
     <Button
         android:id="@+id/start_button"
+        style="?android:attr/borderlessButtonStyle"
+        android:textColor="@android:color/white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="50dp"
         android:onClick="startTimer"
-        android:text="Start" />
+        android:background="@drawable/start_button"
+        android:drawableLeft="@drawable/music_icon"
+        android:drawablePadding="4dp"
+        android:text="Generate Playlist"
+        android:paddingLeft="9dp"
+        android:paddingRight="9dp"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:text=""
         android:textColor="@android:color/white"
         android:visibility="invisible"
@@ -164,7 +250,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Dusting off cobwebs..."
         android:textColor="@android:color/white"
         android:visibility="visible"
