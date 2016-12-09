@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +18,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 
+//import com.mikhaellopez.circularfillableloaders.CircularFillableLoaders;
+
 
 public class countdownActivity extends Activity implements MediaPlayer.OnCompletionListener {
 
@@ -25,6 +28,7 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
     private int pos = 0;
     private Boolean pickShortest = false;
     private final int MARGIN = 20000;
+    private int progress = 100;
 
     public int hours;
     public int minutes;
@@ -37,15 +41,27 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
     MediaPlayer mp;
 
     int timeLeft = 0;
+    int totalTime = 0;
+    int increment = 0;
 
 
     private ArrayList<File> songList;
     private ArrayList<MediaPlayer> playlist = new ArrayList<>();
 
+    private CircularFillableLoaders circularFillableLoaders;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_countdown);
+
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+
+        circularFillableLoaders = (CircularFillableLoaders) findViewById(R.id.circularFillableLoaders);
+
+//        // Set Wave Amplitude (between 0.00f and 0.10f)
+        circularFillableLoaders.setAmplitudeRatio(0.03f);
 
         //playButton = (ImageView) findViewById(R.id.pause_button);
         playButton = (Button) findViewById(R.id.pause_button);
@@ -61,7 +77,9 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
         shortestLength = intent.getIntExtra("shortestLength", 0);
 
         timeLeft = toMilliSec(hours, minutes, seconds);
-        Log.e("Hello", Integer.toString(timeLeft));
+        totalTime = toMilliSec(hours, minutes, seconds);
+
+//        Log.e("Hello", Integer.toString(timeLeft));
 
         if (mp != null) {
             mp.stop();
@@ -69,7 +87,7 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
         }
 
         while(timeLeft > MARGIN){
-            Log.e("songIndex", Integer.toString(songIndex));
+//            Log.e("songIndex", Integer.toString(songIndex));
             Uri u = Uri.parse(pickRandSong().toString());
             MediaPlayer singleSong = MediaPlayer.create(this, u);
             playlist.add(singleSong);
@@ -78,29 +96,29 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
             timeLeft -= singleSong.getDuration();
             if(timeLeft > 0 && timeLeft < MARGIN){
                 //You're done, break out of the loop
-                Log.e("Break", Integer.toString(songIndex));
+//                Log.e("Break", Integer.toString(songIndex));
                 break;
             } else if(timeLeft < shortestLength){
                 //Pop off a song and find a fit song and end
-                Log.e("Pop off 1", Integer.toString(songIndex));
-                for (int x = 0; x < playlist.size(); x++){
-                    Log.e("Songs", playlist.get(x).toString());
-                }
+//                Log.e("Pop off 1", Integer.toString(songIndex));
+//                for (int x = 0; x < playlist.size(); x++){
+//                    Log.e("Songs", playlist.get(x).toString());
+//                }
                 timeLeft += playlist.get(songIndex).getDuration();
                 playlist.remove(songIndex);
                 songIndex--;
                 pickShortest = true;
                 Log.e("Pop off 2", Integer.toString(songIndex));
-                for (int x = 0; x < playlist.size(); x++){
-                    Log.e("Songs", playlist.get(x).toString());
-                }
+//                for (int x = 0; x < playlist.size(); x++){
+//                    Log.e("Songs", playlist.get(x).toString());
+//                }
 
                 playlist.add(fitSong(timeLeft));
                 songIndex++;
-                Log.e("Add last", Integer.toString(songIndex));
-                for (int x = 0; x < playlist.size(); x++){
-                    Log.e("Songs", playlist.get(x).toString());
-                }
+//                Log.e("Add last", Integer.toString(songIndex));
+//                for (int x = 0; x < playlist.size(); x++){
+//                    Log.e("Songs", playlist.get(x).toString());
+//                }
                 break;
             }
         }
@@ -126,8 +144,6 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
 
 
     private void doCountDown() {
-
-
         enteredNum[0] = (TextView) findViewById(R.id.cd_seconds);
         enteredNum[1] = (TextView) findViewById(R.id.cd_minutes);
         enteredNum[2] = (TextView) findViewById(R.id.cd_hours);
@@ -136,7 +152,9 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
         enteredNum[1].setText(String.valueOf(minutes));
         enteredNum[0].setText(String.valueOf(seconds));
 
-        timer = new CountDownTimer(toMilliSec(hours, minutes, seconds), 1000) {
+        increment = totalTime/100000;
+
+        timer = new CountDownTimer(totalTime, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 milliLeft = millisUntilFinished;
@@ -144,10 +162,19 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
                 enteredNum[2].setText(String.valueOf(millisUntilFinished / 1000 / 3600));
                 enteredNum[1].setText(String.valueOf((millisUntilFinished / 1000 % 3600) / 60));
                 enteredNum[0].setText(String.valueOf(millisUntilFinished / 1000 % 60));
+
+                if(increment > 0 && milliLeft % increment == 0 && progress != 0){
+                    progress--;
+                    circularFillableLoaders.setProgress(progress);
+                } else if (increment == 0 && progress != 0 && milliLeft % Math.ceil(1/totalTime/100000) == 0){
+                    progress--;
+                }
+
             }
 
             public void onFinish() {
                 enteredNum[0].setText(String.valueOf(0));
+                circularFillableLoaders.setProgress(0);
             }
         }.start();
     }
@@ -173,21 +200,21 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
 
             if(mp.getDuration() < duration - MARGIN){
                 indexSongList++;
-                Log.e("indexSongList", Integer.toString(indexSongList));
+//                Log.e("indexSongList", Integer.toString(indexSongList));
                 continue;
             }
             if(mp.getDuration() > (duration - MARGIN) && mp.getDuration() < (duration + MARGIN)){
                 media.add(mp);
                 index++;
                 indexSongList++;
-                Log.e("index", Integer.toString(index));
-                Log.e("indexSongList", Integer.toString(indexSongList));
+//                Log.e("index", Integer.toString(index));
+//                Log.e("indexSongList", Integer.toString(indexSongList));
 
             } else if(mp.getDuration() > (duration + MARGIN)){
                 media.remove(index);
                 index--;
                 arrayComplete = true;
-                Log.e("Hello", "For the depths of the else if");
+//                Log.e("Hello", "From the depths of the else if");
             }
         }
         Random rand = new Random();

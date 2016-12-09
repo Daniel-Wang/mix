@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="#D5EEFF"
+    android:background="#FFFFFF"
     tools:context="danielwang.com.musictime.MainActivity">
 
 
@@ -219,7 +219,7 @@
 
     <Button
         android:id="@+id/start_button"
-        style="?android:attr/borderlessButtonStyle"
+        style="?android:attr/selectableItemBackgroundBorderless"
         android:textColor="@android:color/white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -232,7 +232,8 @@
         android:drawablePadding="4dp"
         android:text="Generate Playlist"
         android:paddingLeft="9dp"
-        android:paddingRight="9dp"/>
+        android:paddingRight="9dp"
+        android:fontFamily="Helvetica"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -245,19 +246,21 @@
         android:id="@+id/tooShortWarning"
         android:layout_below="@+id/linear_layout_enteredNum"
         android:layout_centerHorizontal="true"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:fontFamily="Helvetica"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Dusting off cobwebs..."
+        android:text="Dusting off cobwebs ..."
         android:textColor="@android:color/white"
         android:visibility="visible"
         android:background="@drawable/loading_message"
         android:id="@+id/loadingMessage"
         android:layout_below="@+id/linear_layout_enteredNum"
         android:layout_centerHorizontal="true"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:fontFamily="Helvetica"/>
 
 </RelativeLayout>

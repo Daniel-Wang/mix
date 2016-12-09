@@ -114,7 +114,7 @@ public class MainActivity extends Activity implements Button.OnClickListener{
             mmin = Integer.toString((shortestLength/ 1000 % 3600) / 60);
             msec = Integer.toString(shortestLength/ 1000 % 60);
 
-            warningView.setText("Warning! You have no songs shorter than: " + mmin + ":" + msec);
+            warningView.setText("Warning! You have no songs shorter than " + mmin + ":" + msec);
             warningView.setVisibility(View.VISIBLE);
 
             final Animation in = new AlphaAnimation(0.0f, 1.0f);
