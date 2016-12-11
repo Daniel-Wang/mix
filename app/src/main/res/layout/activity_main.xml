@@ -4,11 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
-
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="#FFFFFF"
     tools:context="danielwang.com.musictime.MainActivity">
-
 
     <LinearLayout
         android:id="@+id/linear_layout_enteredNum"
@@ -257,6 +255,20 @@
         android:visibility="visible"
         android:background="@drawable/loading_message"
         android:id="@+id/loadingMessage"
+        android:layout_below="@+id/linear_layout_enteredNum"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:fontFamily="Helvetica"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="You have no songs in storage! We can't really play music :("
+        android:textColor="@android:color/white"
+        android:visibility="invisible"
+        android:background="@drawable/rounded_corner"
+        android:id="@+id/noSongs"
         android:layout_below="@+id/linear_layout_enteredNum"
         android:layout_centerHorizontal="true"
         android:gravity="center"

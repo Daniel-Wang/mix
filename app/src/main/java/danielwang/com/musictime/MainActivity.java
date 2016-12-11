@@ -31,6 +31,8 @@ public class MainActivity extends Activity implements Button.OnClickListener{
     private int shortestLength = 0;
     private TextView warningView;
     private TextView loadingMessage;
+    private TextView noSongsMessage;
+    private Boolean noSongs = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,7 @@ public class MainActivity extends Activity implements Button.OnClickListener{
 
         warningView = (TextView) findViewById(R.id.tooShortWarning);
         loadingMessage = (TextView) findViewById(R.id.loadingMessage);
+        noSongsMessage = (TextView) findViewById(R.id.noSongs);
 
         mDelete = (ImageButton) findViewById(R.id.delete);
         mDelete.setOnClickListener(this);
@@ -93,14 +96,19 @@ public class MainActivity extends Activity implements Button.OnClickListener{
             }
 
         } else{
-
             Intent intent = getIntent();
 
-            fileList = (ArrayList<File>) getIntent().getSerializableExtra("songList");
-            shortestLength = intent.getIntExtra("shortestLength", 0);
+            noSongs = intent.getBooleanExtra("noSongs", true);
+
+            if(!noSongs){
+                fileList = (ArrayList<File>) getIntent().getSerializableExtra("songList");
+                shortestLength = intent.getIntExtra("shortestLength", 0);
 //            Log.e("Shortest length", "" + fileList.get(0).toString());
 
-            loadingMessage.setVisibility(View.INVISIBLE);
+                loadingMessage.setVisibility(View.INVISIBLE);
+            } else {
+                noSongsMessage.setVisibility(View.VISIBLE);
+            }
         }
 
     }
@@ -133,12 +141,15 @@ public class MainActivity extends Activity implements Button.OnClickListener{
             intent.putExtra("minutes", (10 * mInput[3] + mInput[2]));
             intent.putExtra("seconds", (10 * mInput[1] + mInput[0]));
 
+            if((10 * mInput[5] + mInput[4]) > 12){
+                Toast.makeText(MainActivity.this, "Wanna try a shorter time? ;)", Toast.LENGTH_LONG).show();
+            } else{
+                intent.putExtra("songList", fileList);
 
-            intent.putExtra("songList", fileList);
+                intent.putExtra("shortestLength", shortestLength);
 
-            intent.putExtra("shortestLength", shortestLength);
-
-            startActivity(intent);
+                startActivity(intent);
+            }
         }
     }
 

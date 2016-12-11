@@ -9,7 +9,6 @@ import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
@@ -34,7 +33,7 @@ public class SplashActivity extends AppCompatActivity {
 
         if (settings.getBoolean("my_first_time", true)) {
             //the app is being launched for first time, do something
-            Log.d("Comments", "First time");
+//            Log.d("Comments", "First time");
 
             // first time task
 
@@ -73,19 +72,28 @@ public class SplashActivity extends AppCompatActivity {
 
             } else{
                 songList = findSongs(Environment.getExternalStorageDirectory());
-                shortestLength = songList.get(0).getDuration();
-                Log.e("This is in", "the else");
-                Log.e("Shortest length", "" + songList.get(0).toString());
+                if(songList == null){
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.putExtra("noSongs", true);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    shortestLength = songList.get(0).getDuration();
+//                Log.e("This is in", "the else");
+//                Log.e("Shortest length", "" + songList.get(0).toString());
 
-                for(int i = 0; i < songList.size(); i++)
-                    fileList.add(songList.get(i).getFile());
+                    for(int i = 0; i < songList.size(); i++)
+                        fileList.add(songList.get(i).getFile());
 
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra("songList", fileList);
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.putExtra("songList", fileList);
+                    intent.putExtra("noSongs", false);
 
-                intent.putExtra("shortestLength", shortestLength);
-                startActivity(intent);
-                finish();
+                    intent.putExtra("shortestLength", shortestLength);
+                    startActivity(intent);
+                    finish();
+                }
+
             }
         }
         // Here, this is the current activity
@@ -100,7 +108,7 @@ public class SplashActivity extends AppCompatActivity {
             songList = findSongs(Environment.getExternalStorageDirectory());
             shortestLength = songList.get(0).getDuration();
 
-            Log.e("Shortest length", "" + songList.get(0).getFile().toString());
+//            Log.e("Shortest length", "" + songList.get(0).getFile().toString());
             for(int i = 0; i < songList.size(); i++)
                 fileList.add(songList.get(i).getFile());
 
