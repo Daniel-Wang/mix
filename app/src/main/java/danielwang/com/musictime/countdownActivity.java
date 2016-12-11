@@ -9,33 +9,29 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 
-//import com.mikhaellopez.circularfillableloaders.CircularFillableLoaders;
-
-
 public class countdownActivity extends Activity implements MediaPlayer.OnCompletionListener {
 
     private int songIndex = -1;
     private int shortestLength = 0;
     private int pos = 0;
-    private Boolean pickShortest = false;
     private final int MARGIN = 20000;
     private int progress = 100;
+    private boolean paused = false;
 
     public int hours;
     public int minutes;
     public int seconds;
     private final TextView[] enteredNum = new TextView[3];
 
-    Button playButton;
+    ImageView playButton;
     CountDownTimer timer;
     long milliLeft;
     MediaPlayer mp;
@@ -63,8 +59,7 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
 //        // Set Wave Amplitude (between 0.00f and 0.10f)
         circularFillableLoaders.setAmplitudeRatio(0.03f);
 
-        //playButton = (ImageView) findViewById(R.id.pause_button);
-        playButton = (Button) findViewById(R.id.pause_button);
+        playButton = (ImageView) findViewById(R.id.pause_button);
 
 
         Intent intent = getIntent();
@@ -107,8 +102,7 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
                 timeLeft += playlist.get(songIndex).getDuration();
                 playlist.remove(songIndex);
                 songIndex--;
-                pickShortest = true;
-                Log.e("Pop off 2", Integer.toString(songIndex));
+//                Log.e("Pop off 2", Integer.toString(songIndex));
 //                for (int x = 0; x < playlist.size(); x++){
 //                    Log.e("Songs", playlist.get(x).toString());
 //                }
@@ -124,6 +118,44 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
         }
 
         playSong(pos);
+        playButton.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+                if (!paused) {
+                    playButton.setImageResource(R.mipmap.ic_play);
+                    timer.cancel();
+                    mp.pause();
+                    paused = true;
+                } else {
+                    paused = false;
+                    playButton.setImageResource(R.mipmap.ic_pause);
+                    mp.start();
+                    timer = new CountDownTimer(milliLeft, 1000) {
+
+                        public void onTick(long millisUntilFinished) {
+                            milliLeft = millisUntilFinished;
+
+                            enteredNum[2].setText(String.valueOf(millisUntilFinished / 1000 / 3600));
+                            enteredNum[1].setText(String.valueOf((millisUntilFinished / 1000 % 3600) / 60));
+                            enteredNum[0].setText(String.valueOf(millisUntilFinished / 1000 % 60));
+
+                            if(increment > 0 && milliLeft % increment == 0 && progress != 0){
+                                progress--;
+                            } else if (increment == 0 && progress != 0 && milliLeft % Math.ceil((totalTime*1.0/100000.0)) == 0){
+                                progress--;
+                            }
+                            circularFillableLoaders.setProgress(progress);
+
+                        }
+
+                        public void onFinish() {
+                            enteredNum[0].setText(String.valueOf(0));
+                        }
+                    }.start();
+                }
+            }
+        });
         doCountDown();
 
     }
@@ -165,10 +197,10 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
 
                 if(increment > 0 && milliLeft % increment == 0 && progress != 0){
                     progress--;
-                    circularFillableLoaders.setProgress(progress);
-                } else if (increment == 0 && progress != 0 && milliLeft % Math.ceil(1/totalTime/100000) == 0){
+                } else if (increment == 0 && progress != 0 && milliLeft % Math.ceil((totalTime*1.0/100000.0)) == 0){
                     progress--;
                 }
+                circularFillableLoaders.setProgress(progress);
 
             }
 
@@ -220,7 +252,7 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
         Random rand = new Random();
         int n = rand.nextInt(media.size());
         myMp = media.get(n);
-        Log.e("Song", myMp.toString());
+//        Log.e("Song", myMp.toString());
         return myMp;
     }
 
@@ -251,34 +283,13 @@ public class countdownActivity extends Activity implements MediaPlayer.OnComplet
         }
     }
 
-
-    public void buttonOnClick(View view) {
-
-        String status = playButton.getText().toString();
-        if (status.equals("Pause")) {
-            //playButton.setImageResource(R.drawable.ic_play);
-            timer.cancel();
-            mp.pause();
-            playButton.setText("Play");
-        } else {
-            playButton.setText("Pause");
-            mp.start();
-            timer = new CountDownTimer(milliLeft, 1000) {
-
-                public void onTick(long millisUntilFinished) {
-                    milliLeft = millisUntilFinished;
-
-                    enteredNum[2].setText(String.valueOf(millisUntilFinished / 1000 / 3600));
-                    enteredNum[1].setText(String.valueOf((millisUntilFinished / 1000 % 3600) / 60));
-                    enteredNum[0].setText(String.valueOf(millisUntilFinished / 1000 % 60));
-                }
-
-                public void onFinish() {
-                    enteredNum[0].setText(String.valueOf(0));
-                }
-            }.start();
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mp != null) {
+            mp.stop();
+            mp.release();
         }
-
     }
 
 }

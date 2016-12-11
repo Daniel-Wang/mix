@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -99,7 +98,7 @@ public class MainActivity extends Activity implements Button.OnClickListener{
 
             fileList = (ArrayList<File>) getIntent().getSerializableExtra("songList");
             shortestLength = intent.getIntExtra("shortestLength", 0);
-            Log.e("Shortest length", "" + fileList.get(0).toString());
+//            Log.e("Shortest length", "" + fileList.get(0).toString());
 
             loadingMessage.setVisibility(View.INVISIBLE);
         }
@@ -148,13 +147,10 @@ public class MainActivity extends Activity implements Button.OnClickListener{
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_GRANTED){
 
-            //loadingMessage.setVisibility(View.VISIBLE);
-            //loadingMessage.setText("Dusting off cobwebs...");
-
             songList = findSongs(Environment.getExternalStorageDirectory());
             shortestLength = songList.get(0).getDuration();
 
-            Log.e("Shortest length", "" + songList.get(0).getFile().toString());
+//            Log.e("Shortest length", "" + songList.get(0).getFile().toString());
             for(int i = 0; i < songList.size(); i++)
                 fileList.add(songList.get(i).getFile());
 
