@@ -230,7 +230,7 @@ public class MainActivity extends Activity implements Button.OnClickListener{
         File[] files = root.listFiles();
 
         for (File singleFile : files) {
-            if (singleFile.isDirectory() && !singleFile.isHidden()) {
+            if (singleFile.isDirectory() && !singleFile.isHidden() && !(new String("DCIM").equals(singleFile.toString())) && !(new String("Android").equals(singleFile.toString()))) {
                 al.addAll(findSongs(singleFile));
             } else {
                 if (singleFile.getName().endsWith(".mp3") ||

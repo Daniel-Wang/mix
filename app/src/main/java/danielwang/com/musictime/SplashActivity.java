@@ -22,6 +22,7 @@ import java.util.Collections;
 public class SplashActivity extends AppCompatActivity {
     private ArrayList<SongFile> songList;
     private int shortestLength = 0;
+    private boolean noSongs = true;
     private ArrayList<File> fileList = new ArrayList<>();
     final String PREFS_NAME = "MyPrefsFile";
 
@@ -72,12 +73,9 @@ public class SplashActivity extends AppCompatActivity {
 
             } else{
                 songList = findSongs(Environment.getExternalStorageDirectory());
-                if(songList == null){
-                    Intent intent = new Intent(this, MainActivity.class);
-                    intent.putExtra("noSongs", true);
-                    startActivity(intent);
-                    finish();
-                } else {
+                Intent intent = new Intent(this, MainActivity.class);
+                if(songList != null){
+                    noSongs = false;
                     shortestLength = songList.get(0).getDuration();
 //                Log.e("This is in", "the else");
 //                Log.e("Shortest length", "" + songList.get(0).toString());
@@ -85,14 +83,13 @@ public class SplashActivity extends AppCompatActivity {
                     for(int i = 0; i < songList.size(); i++)
                         fileList.add(songList.get(i).getFile());
 
-                    Intent intent = new Intent(this, MainActivity.class);
                     intent.putExtra("songList", fileList);
-                    intent.putExtra("noSongs", false);
-
                     intent.putExtra("shortestLength", shortestLength);
-                    startActivity(intent);
-                    finish();
                 }
+
+                intent.putExtra("noSongs", noSongs);
+                startActivity(intent);
+                finish();
 
             }
         }
@@ -106,12 +103,16 @@ public class SplashActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_GRANTED){
             songList = findSongs(Environment.getExternalStorageDirectory());
-            shortestLength = songList.get(0).getDuration();
+            if(songList != null){
+                noSongs = false;
+                shortestLength = songList.get(0).getDuration();
 
 //            Log.e("Shortest length", "" + songList.get(0).getFile().toString());
-            for(int i = 0; i < songList.size(); i++)
-                fileList.add(songList.get(i).getFile());
-
+                for(int i = 0; i < songList.size(); i++)
+                    fileList.add(songList.get(i).getFile());
+            } else {
+                noSongs = true;
+            }
         } else {
             Toast.makeText(this, "Aw, this app won't work without your permission", Toast.LENGTH_SHORT).show();
         }
@@ -122,7 +123,7 @@ public class SplashActivity extends AppCompatActivity {
         File[] files = root.listFiles();
 
         for (File singleFile : files) {
-            if (singleFile.isDirectory() && !singleFile.isHidden()) {
+            if (singleFile.isDirectory() && !singleFile.isHidden() && !(new String("DCIM").equals(singleFile.toString())) && !(new String("Android").equals(singleFile.toString()))) {
                 al.addAll(findSongs(singleFile));
             } else {
                 if (singleFile.getName().endsWith(".mp3") ||
